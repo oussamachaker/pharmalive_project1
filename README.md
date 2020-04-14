@@ -1,6 +1,5 @@
-# pharmalive - Innovative solution to combat the Covid-19 crisis
+# Pharmalive - Innovative solution to combat the Covid-19 crisis
 
-================================================================================
 
 Install
 ================================================================================

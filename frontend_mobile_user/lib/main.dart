@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'src/locations.dart' as locations;
 
 void main() => runApp(MyApp());
 
@@ -27,15 +28,32 @@ class MyMapPage extends StatefulWidget {
   _MyMapPageState createState() => _MyMapPageState();
 }
 
+
+
+
+
 class _MyMapPageState extends State<MyMapPage> {
-  GoogleMapController mapController;
 
-  final LatLng _center = const LatLng(36.849237, 10.141989);
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
+  final Map<String, Marker> _markers = {};
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    final googleDrugStores = await locations.getGoogleDrugStores();
+    setState(() {
+      _markers.clear();
+      for (final drugStore in googleDrugStores.drugStores) {
+        final marker = Marker(
+          markerId: MarkerId(drugStore.name),
+          position: LatLng(drugStore.lat, drugStore.lng),
+          infoWindow: InfoWindow(
+            title: drugStore.name,
+            snippet: drugStore.address,
+          ),
+        );
+        _markers[drugStore.name] = marker;
+      }
+    });
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,9 +65,10 @@ class _MyMapPageState extends State<MyMapPage> {
         body: GoogleMap(
           onMapCreated: _onMapCreated,
           initialCameraPosition: CameraPosition(
-            target: _center,
-            zoom: 10.0,
+            target: const LatLng(36.849237, 10.141989),
+            zoom: 11,
           ),
+          markers: _markers.values.toSet(),
         ),
       ),
     );

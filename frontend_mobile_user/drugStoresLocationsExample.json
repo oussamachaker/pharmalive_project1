@@ -1,0 +1,48 @@
+{
+    "drugStores": [
+        {
+            "address": "Rue 7301, Tunis, Tunisia", 
+            "id": "feaf", 
+            "image": "https://www.bilaterals.org/local/cache-vignettes/L640xH366/pharmacie-devanture-15209.jpg", 
+            "lat": 36.85210352259882, 
+            "lng": 10.147224984314027, 
+            "name": "Pharmacie Miladi", 
+            "phone": "+216 70 861 837", 
+            "region": "Tunis",
+            "numberFaceMask" : 5
+        },
+        {
+            "address": "Tunis 1013, Tunisia", 
+            "id": "mer", 
+            "image": "https://www.bilaterals.org/local/cache-vignettes/L640xH366/pharmacie-devanture-15209.jpg", 
+            "lat": 36.849269008508344, 
+            "lng": 10.137879977147533, 
+            "name": "Pharmacie Fakhfakh Laila", 
+            "phone": "+216 28 530 100", 
+            "region": "Tunis",
+            "numberFaceMask" : 340
+        }, 
+        {
+            "address": "Rue Ali Ayari, Tunis, Tunisia", 
+            "id": "zef", 
+            "image": "https://www.bilaterals.org/local/cache-vignettes/L640xH366/pharmacie-devanture-15209.jpg", 
+            "lat": 36.848030723789584, 
+            "lng": 10.158654850187196, 
+            "name": "Pharmacie Bejar", 
+            "phone": "+216 71 888 413", 
+            "region": "Tunis",
+            "numberFaceMask" : 3432
+        }, 
+        {
+            "address": "Avenue Hédi Nouira Ennasr، Ariana 2080, Tunisia", 
+            "id": "athens", 
+            "image": "https://www.bilaterals.org/local/cache-vignettes/L640xH366/pharmacie-devanture-15209.jpg", 
+            "lat": 36.85485548345371, 
+            "lng": 10.154250639725907, 
+            "name": "Night Pharmacy", 
+            "phone": "+216 71 828 537", 
+            "region": "Tunis",
+            "numberFaceMask" : 52
+        } 
+    ]
+}

@@ -81,7 +81,7 @@ class Locations {
 }
 
 Future<Locations> getGoogleDrugStores() async {
-  const googleLocationsURL = 'C:/Users/Aziz/Desktop/pharmalive_project/frontend_mobile_user/drugStoresLocationsExample.json';
+  const googleLocationsURL = 'https://raw.githubusercontent.com/sdassi/pharmalive_project/master/frontend_mobile_user/drugStoresLocationsExample.json';
 
   // Retrieve the locations of all drugstore
   final response = await http.get(googleLocationsURL);

@@ -41,8 +41,8 @@ class PharmacySchema(ma.Schema):
 
 
 # Init schema
-pharmacy_schema = PharmacySchema(strict=True)
-pharmacies_schema = PharmacySchema(many=True, strict=True)
+pharmacy_schema = PharmacySchema()
+pharmacies_schema = PharmacySchema(many=True)
 
 
 # Add a pharmacy

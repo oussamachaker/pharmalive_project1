@@ -4,13 +4,13 @@ channels:
 dependencies:
   - python=3.7.3
   - pip
-  - pip :
+  - pip:
       - flask
       - SQLAlchemy
-      - Flask-SQLAlchemy
       - flask-cors
       - Flask-Bcrypt
       - jwt
       - pyjwt
-
-
+      - flask_sqlalchemy
+      - flask-marshmallow
+      - marshmallow-sqlalchemy

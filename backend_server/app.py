@@ -8,7 +8,6 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Database
-# TODO add the database path
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
     basedir, "db.sqlite"
 )
@@ -34,7 +33,7 @@ class Pharmacy(db.Model):
         self.coordinates = coordinates
 
 
-# Product Schema
+# Pharmacy Schema
 class PharmacySchema(ma.Schema):
     class Meta:
         fields = ("id", "name", "address", "coordinates")
@@ -65,7 +64,7 @@ def add_product():
 def get_pharmacies():
     all_pharmacies = Pharmacy.query.all()
     result = pharmacies_schema.dump(all_pharmacies)
-    return jsonify(result.data)
+    return jsonify(result)
 
 
 # Get Single Pharmacy given by it's id

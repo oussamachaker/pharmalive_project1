@@ -5,6 +5,8 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'locations.g.dart';
 
+// flutter packages pub run build_runner build
+
 @JsonSerializable()
 class LatLng {
   LatLng({

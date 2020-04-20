@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/MyMapPage.dart';
+
+import 'screens/MainScreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,10 +11,18 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Mawjood',
       theme: ThemeData(
-        // "flutter run"
-        primarySwatch: Colors.green,
+        primaryColor: Colors.white,
+        //primarySwatch: Colors.white,
+        textTheme: TextTheme(
+          display4: TextStyle(
+            fontFamily: 'Corben',
+            fontWeight: FontWeight.w700,
+            fontSize: 24,
+            color: Colors.black,
+          ),
+        ),
       ),
-      home: MyMapPage(title: 'Map Mawjood'),
+      home: MainScreen(title: 'Map Mawjood'),
     );
   }
 }

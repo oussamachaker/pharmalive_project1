@@ -51,6 +51,7 @@ class _MainScreenState extends State<MainScreen > {
     });
     _geolocator = Geolocator();
     checkPermission();
+    updateLocation();
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
@@ -101,9 +102,16 @@ class _MainScreenState extends State<MainScreen > {
     _geolocator.checkGeolocationPermissionStatus(locationPermission: GeolocationPermission.locationWhenInUse)..then((status) { print('whenInUse status: $status'); });
   }
 
+  void updateMarkers() async {
+    print("---------------- update marker on camera move end");
+    LatLngBounds latLngBounds = await _mapController.getVisibleRegion();
+    print("++++++++ NW lat : " +  latLngBounds.northeast.latitude.toString() + " ----" + latLngBounds.northeast.longitude.toString() );
+    print("++++++++ NW lat : " +  latLngBounds.southwest.latitude.toString() + " ----" + latLngBounds.southwest.longitude.toString() );
+  }
+
   void updateLocation() async {
 
-    print("----------------took old location");
+    print("---------------- getting user's location");
     try {
       Position newPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
           .timeout(new Duration(seconds: 20));
@@ -131,17 +139,17 @@ class _MainScreenState extends State<MainScreen > {
 
     return Scaffold(
       appBar: _mainScreen ? PreferredSize(
-        preferredSize: Size(double.infinity, 100),
+        preferredSize: Size(double.infinity, 70),
         child: Container(
           decoration: BoxDecoration(
               boxShadow: [BoxShadow(
                   color: Colors.white70,
-                  spreadRadius: 5,
-                  blurRadius: 2
+                  spreadRadius: 7,
+                  blurRadius: 5
               )]
           ),
           width: MediaQuery.of(context).size.width,
-          height: 100,
+          height: 80,
           child: Container(
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -168,10 +176,41 @@ class _MainScreenState extends State<MainScreen > {
           initialCameraPosition: initialLocation,
           onMapCreated: _onMapCreated,
           markers: _markers.values.toSet(),
+          onCameraIdle: updateMarkers,
           gestureRecognizers: Set()..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer()))
       ),
 
-        floatingActionButton: _mainScreen ? FloatingActionButton.extended(
+
+      floatingActionButton: Stack(
+        children: <Widget>[
+          (_mainScreen == false) ? Align(
+            alignment: FractionalOffset(0.1, 0.1),
+            child: FloatingActionButton(
+              elevation: 4.0,
+              child: const Icon(Icons.arrow_back_ios, color: Colors.black ),
+              backgroundColor: Colors.white,
+              onPressed: () {
+                _mainScreen = true;
+              },
+            ) ,
+          ) : Align(),
+
+          _mainScreen ? Align(
+            alignment: FractionalOffset(0.5, 0.96),
+            child: FloatingActionButton.extended(
+              elevation: 4.0,
+              icon: const Icon(Icons.location_searching, color: Colors.black ),
+              label: const Text('Locate Me',style: TextStyle(fontSize: 15, fontFamily: 'Corben', color: Colors.black) ),
+              backgroundColor: Colors.yellow,
+              onPressed: () {
+                centerOverLocation();
+              },
+            ) ,
+          ) : Align(),
+        ],
+      ),
+
+      /*  floatingActionButton : _mainScreen ? FloatingActionButton.extended(
           elevation: 4.0,
           icon: const Icon(Icons.location_searching, color: Colors.black ),
           label: const Text('Locate Me',style: TextStyle(fontSize: 15, fontFamily: 'Corben', color: Colors.black) ),
@@ -179,9 +218,10 @@ class _MainScreenState extends State<MainScreen > {
           onPressed: () {
             centerOverLocation();
           },
-        ) : null,
+        ) : null, */
+
         floatingActionButtonLocation: _mainScreen ?
-        FloatingActionButtonLocation.centerDocked : null,
+          FloatingActionButtonLocation.centerDocked : null,
 
       bottomNavigationBar: _mainScreen ? BottomAppBar(
           child: new Row(

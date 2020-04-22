@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'screens/MainScreen.dart';
+import 'screens/SplashScreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,6 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Mawjood',
       theme: ThemeData(
         primaryColor: Colors.white,
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: MainScreen(title: 'Map Mawjood'),
+      home: Loader(),
     );
   }
 }

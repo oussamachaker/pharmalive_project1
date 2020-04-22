@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'MyMapPage.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:splashscreen/splashscreen.dart';
 import '../json_serializable/locations.dart' as locations;
 
 class MainScreen extends StatefulWidget {
@@ -21,19 +22,16 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen > {
-
   bool _mainScreen = true;
-
   GoogleMapController _mapController ;
   final Map<String, Marker> _markers = {};
-
   BitmapDescriptor pinLocationIcon;
   BitmapDescriptor pinPharmaIcon;
-
   LatLng myPinPosition;
   Geolocator _geolocator;
   Position _position;
   CameraPosition initialLocation;
+  GoogleMap googleMap;
 
   @override
   void initState() {
@@ -115,12 +113,14 @@ class _MainScreenState extends State<MainScreen > {
     try {
       Position newPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
           .timeout(new Duration(seconds: 20));
-      if (newPosition == null) {
-        newPosition = await Geolocator().getLastKnownPosition();
-      }
       setState(() {
         _position = newPosition;
         myPinPosition = LatLng(_position.latitude , _position.longitude);
+        initialLocation= CameraPosition(
+            zoom: 16,
+            bearing: 30,
+            target: LatLng(_position.latitude , _position.longitude)
+        );
       });
     } catch (e) {
       print('Error: ${e.toString()}');
@@ -129,14 +129,21 @@ class _MainScreenState extends State<MainScreen > {
 
   @override
   Widget build(BuildContext context) {
-    updateLocation();
-    myPinPosition = LatLng(_position.latitude , _position.longitude);
-    initialLocation= CameraPosition(
-        zoom: 16,
-        bearing: 30,
-        target: myPinPosition
-    );
-
+    if (_position != null) {
+      googleMap = GoogleMap(
+          compassEnabled: false,
+          indoorViewEnabled: false,
+          myLocationButtonEnabled: false,
+          myLocationEnabled: false,
+          mapToolbarEnabled: false,
+          initialCameraPosition: initialLocation,
+          onMapCreated: _onMapCreated,
+          markers: _markers.values.toSet(),
+          onCameraIdle: updateMarkers,
+          gestureRecognizers: Set()
+            ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer()))
+      );
+    }
     return Scaffold(
       appBar: _mainScreen ? PreferredSize(
         preferredSize: Size(double.infinity, 70),
@@ -171,14 +178,8 @@ class _MainScreenState extends State<MainScreen > {
         ),
       ) : null ,
 
-      body: GoogleMap(
-          compassEnabled : false, indoorViewEnabled: false, myLocationButtonEnabled: false, myLocationEnabled: false, mapToolbarEnabled: false,
-          initialCameraPosition: initialLocation,
-          onMapCreated: _onMapCreated,
-          markers: _markers.values.toSet(),
-          onCameraIdle: updateMarkers,
-          gestureRecognizers: Set()..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer()))
-      ),
+      body: (_position != null) ? googleMap
+          : SpinKitDoubleBounce(color: Colors.black),
 
 
       floatingActionButton: Stack(
@@ -209,16 +210,6 @@ class _MainScreenState extends State<MainScreen > {
           ) : Align(),
         ],
       ),
-
-      /*  floatingActionButton : _mainScreen ? FloatingActionButton.extended(
-          elevation: 4.0,
-          icon: const Icon(Icons.location_searching, color: Colors.black ),
-          label: const Text('Locate Me',style: TextStyle(fontSize: 15, fontFamily: 'Corben', color: Colors.black) ),
-          backgroundColor: Colors.yellow,
-          onPressed: () {
-            centerOverLocation();
-          },
-        ) : null, */
 
         floatingActionButtonLocation: _mainScreen ?
           FloatingActionButtonLocation.centerDocked : null,

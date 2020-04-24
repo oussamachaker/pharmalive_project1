@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:splashscreen/splashscreen.dart';
 import '../json_serializable/locations.dart' as locations;
 
 class MainScreen extends StatefulWidget {
@@ -22,21 +21,24 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen > {
-  bool _mainScreen = true;
-  GoogleMapController _mapController ;
-  final Map<String, Marker> _markers = {};
   BitmapDescriptor pinLocationIcon;
   BitmapDescriptor pinPharmaIcon;
+
+  bool _mainScreen = true;
+  bool isThreeDimensionMap = true;
+  GoogleMapController _mapController ;
+  final Map<String, Marker> _markers = {};
+
   LatLng myPinPosition;
   Geolocator _geolocator;
   Position _position;
   CameraPosition initialLocation;
-  GoogleMap googleMap;
+  double tiltCamera;
 
   @override
   void initState() {
     super.initState();
-    print("-----------------------------------InitState");
+    print("----------------------------------- Init State");
     BitmapDescriptor.fromAssetImage(
         ImageConfiguration(devicePixelRatio: 2.5),
         'assets/images/myLocationIcon.png').then((onValue) {
@@ -49,24 +51,19 @@ class _MainScreenState extends State<MainScreen > {
     });
     _geolocator = Geolocator();
     checkPermission();
-    updateLocation();
+    tiltCamera = 90;
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
     _mapController = controller;
+    updateLocation();
+
     final googleDrugStores = await locations.getGoogleDrugStores();
     setState(() {
       _markers.clear();
-      final myMarker = Marker(
-          markerId: MarkerId("MyLocation"),
-          position: myPinPosition ,
-          icon: pinLocationIcon
-      );
-      _markers["I am here"] = myMarker;
-
       for (final drugStore in googleDrugStores.drugStores) {
         final marker = Marker(
-          markerId: MarkerId(drugStore.name),
+          markerId: MarkerId(drugStore.id),
           position: LatLng(drugStore.lat, drugStore.lng),
           icon: pinPharmaIcon,
           infoWindow: InfoWindow(
@@ -74,23 +71,37 @@ class _MainScreenState extends State<MainScreen > {
             snippet: "Nb Masks : " + drugStore.numberFaceMask.toString(),
           ),
         );
-        _markers[drugStore.name] = marker;
+        _markers[drugStore.id] = marker;
+      }
+      if (myPinPosition != null) {
+        final myMarker = Marker(
+          markerId: MarkerId("MyLocation"),
+          position: myPinPosition,
+          icon: pinLocationIcon,
+          infoWindow: InfoWindow(
+              title: "My Location"
+          ),
+        );
+        _markers["MyLocation"] = myMarker;
       }
     });
-
   }
 
   void centerOverLocation(){
+    print("--------------- center over current location");
+    _markers.removeWhere((key, value) => key == "MyLocation");
+    final myMarker = Marker(
+        markerId: MarkerId("MyLocation"),
+        position: myPinPosition ,
+        icon: pinLocationIcon
+    );
     setState(() {
-      print("--------------- center over current location");
-      _mapController.moveCamera(CameraUpdate.newLatLng(myPinPosition));
-      _markers.removeWhere((key, value) => key == "I am here");
-      final myMarker = Marker(
-          markerId: MarkerId("MyLocation"),
-          position: myPinPosition ,
-          icon: pinLocationIcon
+      _mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(target: myPinPosition, zoom: 16, tilt: tiltCamera),
+          )
       );
-      _markers["I am here"] = myMarker;
+      _markers["MyLocation"] = myMarker;
     });
   }
 
@@ -105,22 +116,64 @@ class _MainScreenState extends State<MainScreen > {
     LatLngBounds latLngBounds = await _mapController.getVisibleRegion();
     print("++++++++ NW lat : " +  latLngBounds.northeast.latitude.toString() + " ----" + latLngBounds.northeast.longitude.toString() );
     print("++++++++ NW lat : " +  latLngBounds.southwest.latitude.toString() + " ----" + latLngBounds.southwest.longitude.toString() );
+    double NElat = latLngBounds.northeast.latitude;
+    double NElng = latLngBounds.northeast.longitude;
+    double SWlat = latLngBounds.southwest.latitude;
+    double SWlng = latLngBounds.southwest.longitude;
+    final getDrugStores = await locations.getGoogleDrugStores();
+    setState(() {
+      _markers.clear();
+      for (final drugStore in getDrugStores.drugStores) {
+        if(drugStore.lat<NElat && drugStore.lng<NElng && drugStore.lat>SWlat && drugStore.lng>SWlng ) {
+          final marker = Marker(
+            markerId: MarkerId(drugStore.id),
+            position: LatLng(drugStore.lat, drugStore.lng),
+            icon: pinPharmaIcon,
+            infoWindow: InfoWindow(
+              title: drugStore.name,
+              snippet: "Nb Masks : " + drugStore.numberFaceMask.toString(),
+            ),
+          );
+          _markers[drugStore.id] = marker;
+        }
+      }
+      if (myPinPosition != null) {
+        final myMarker = Marker(
+          markerId: MarkerId("MyLocation"),
+          position: myPinPosition,
+          icon: pinLocationIcon,
+          infoWindow: InfoWindow(
+              title: "My Location"
+          ),
+        );
+        _markers["MyLocation"] = myMarker;
+      }
+    });
   }
 
   void updateLocation() async {
 
-    print("---------------- getting user's location");
+    print("---------------- update location");
     try {
       Position newPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
           .timeout(new Duration(seconds: 20));
       setState(() {
         _position = newPosition;
         myPinPosition = LatLng(_position.latitude , _position.longitude);
-        initialLocation= CameraPosition(
-            zoom: 16,
-            bearing: 30,
-            target: LatLng(_position.latitude , _position.longitude)
+        _mapController.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(target: myPinPosition, zoom: 16,tilt: tiltCamera),
+            )
         );
+        final myMarker = Marker(
+          markerId: MarkerId("MyLocation"),
+          position: myPinPosition ,
+          icon: pinLocationIcon,
+          infoWindow: InfoWindow(
+              title: "My Location"
+          ),
+        );
+        _markers["MyLocation"] = myMarker;
       });
     } catch (e) {
       print('Error: ${e.toString()}');
@@ -129,21 +182,6 @@ class _MainScreenState extends State<MainScreen > {
 
   @override
   Widget build(BuildContext context) {
-    if (_position != null) {
-      googleMap = GoogleMap(
-          compassEnabled: false,
-          indoorViewEnabled: false,
-          myLocationButtonEnabled: false,
-          myLocationEnabled: false,
-          mapToolbarEnabled: false,
-          initialCameraPosition: initialLocation,
-          onMapCreated: _onMapCreated,
-          markers: _markers.values.toSet(),
-          onCameraIdle: updateMarkers,
-          gestureRecognizers: Set()
-            ..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer()))
-      );
-    }
     return Scaffold(
       appBar: _mainScreen ? PreferredSize(
         preferredSize: Size(double.infinity, 70),
@@ -178,9 +216,18 @@ class _MainScreenState extends State<MainScreen > {
         ),
       ) : null ,
 
-      body: (_position != null) ? googleMap
-          : SpinKitDoubleBounce(color: Colors.black),
-
+      body: GoogleMap(
+          compassEnabled : false, indoorViewEnabled: false, myLocationButtonEnabled: false, myLocationEnabled: false, mapToolbarEnabled: false,
+          initialCameraPosition: CameraPosition(
+              tilt: 90,
+              zoom: 6.83,
+              target: LatLng(33.7931605 , 9.5607653)
+          ),
+          onMapCreated: _onMapCreated,
+          markers: _markers.values.toSet(),
+          onCameraIdle: updateMarkers,
+          gestureRecognizers: Set()..add(Factory<PanGestureRecognizer>(() => PanGestureRecognizer()))
+        ),
 
       floatingActionButton: Stack(
         children: <Widget>[
@@ -191,7 +238,9 @@ class _MainScreenState extends State<MainScreen > {
               child: const Icon(Icons.arrow_back_ios, color: Colors.black ),
               backgroundColor: Colors.white,
               onPressed: () {
-                _mainScreen = true;
+                setState(() {
+                  _mainScreen = true;
+                });
               },
             ) ,
           ) : Align(),
@@ -210,8 +259,7 @@ class _MainScreenState extends State<MainScreen > {
           ) : Align(),
         ],
       ),
-
-        floatingActionButtonLocation: _mainScreen ?
+      floatingActionButtonLocation: _mainScreen ?
           FloatingActionButtonLocation.centerDocked : null,
 
       bottomNavigationBar: _mainScreen ? BottomAppBar(
@@ -220,13 +268,19 @@ class _MainScreenState extends State<MainScreen > {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {},
+                icon: isThreeDimensionMap ? ImageIcon (new AssetImage("assets/images/3dLogo.png"), color: null) : ImageIcon (new AssetImage("assets/images/2dLogo.png"), color: null) ,
+                onPressed: () {
+                  setState(() {
+                    isThreeDimensionMap = (!isThreeDimensionMap);
+                  });
+                },
               ),
               IconButton(
                 icon: Icon(Icons.fullscreen),
                 onPressed: () {
-                  _mainScreen = false;
+                  setState(() {
+                    _mainScreen = false;
+                  });
                 },
               )
             ],
@@ -235,56 +289,3 @@ class _MainScreenState extends State<MainScreen > {
     );
   }
 }
-
-
-
-/*
-
-                      children: <Widget>[
-                        Image.asset(
-                          "assets/images/background.png",
-                          fit: BoxFit.cover,
-                          height: double.infinity,
-                          width: double.infinity,
-                        ),
-
-                        Padding(
-                          padding: const EdgeInsets.only(right: 13.0),
-                          child: Container(
-                            height: kToolbarHeight,
-                            child: Row(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    "M A W J O O D",
-                                    style: TextStyle(
-                                      fontFamily: 'Corben',
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 24,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                Spacer(),
-                                GestureDetector(
-                                  onTap: () {
-                                    controller.animateTo(-appBarHeight,
-                                        duration: Duration(seconds: 4),
-                                        curve: Curves.fastOutSlowIn);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.location_searching,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-
- */

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'screens/MainScreen.dart';
-import 'screens/SplashScreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,7 +22,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: Loader(),
+      home: MainScreen(title: "Mawjood"),
     );
   }
 }

@@ -74,25 +74,25 @@ class _SearchScreenState extends State<SearchScreen > {
           decoration: BoxDecoration(
               boxShadow: [BoxShadow(
                   color: Colors.white70,
-                  spreadRadius: 7,
+                  spreadRadius: 8,
                   blurRadius: 5
               )]
           ),
           width: MediaQuery.of(context).size.width,
-          height: 80,
+          height: 70,
           child: Container(
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
             ),
             child: Container(
-              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              margin: EdgeInsets.fromLTRB(0, 26, 0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(Icons.navigate_before, color: Colors.transparent),
-                  Text("LOCATE DRUGSTORE",style: TextStyle(fontSize: 20, color: Colors.black)),
+                  Text("L O C A T E    D R U G S T O R E",style: TextStyle(fontSize: 18, color: Colors.black)),
                   Icon(Icons.navigate_before, color: Colors.transparent),
                 ],
               ),

@@ -29,8 +29,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   Position _position;
   CameraPosition initialLocation;
 
-  AnimationController _animationController;
-
   @override
   void initState() {
     super.initState();
@@ -47,10 +45,6 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     });
     _geolocator = Geolocator();
     checkPermission();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 300),
-    );
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
@@ -210,7 +204,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           decoration: BoxDecoration(
               boxShadow: [BoxShadow(
                   color: Colors.white70,
-                  spreadRadius: 7,
+                  spreadRadius: 8,
                   blurRadius: 5
               )]
           ),
@@ -222,20 +216,20 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20),bottomRight: Radius.circular(20))
             ),
             child: Container(
-              margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Icon(Icons.navigate_before, color: Colors.transparent),
-                  Text("M A W J O O D",style: TextStyle(fontSize: 20, color: Colors.black)),
+                  Text("M A W J O O D",style: TextStyle(fontSize: 21, color: Colors.black)),
                   Icon(Icons.navigate_before, color: Colors.transparent),
                 ],
               ),
             ),
           ),
         ),
-      ) : null ,
+      ) : null,
 
       body: GoogleMap(
           compassEnabled : false, indoorViewEnabled: false, myLocationButtonEnabled: false, myLocationEnabled: false, mapToolbarEnabled: false,
@@ -253,7 +247,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       floatingActionButton: Stack(
         children: <Widget>[
           (_mainScreen == false) ? Align(
-            alignment: FractionalOffset(0.1, 0.1),
+            alignment: FractionalOffset(0.12, 0.12),
             child: FloatingActionButton(
               elevation: 4.0,
               child: const Icon(Icons.arrow_back_ios, color: Colors.black ),

@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:convert';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../json_serializable/locations.dart' as locations;
+import 'SearchScreen.dart';
 
 class MainScreen extends StatefulWidget {
   MainScreen ({Key key, this.title}) : super(key: key);
@@ -20,12 +16,11 @@ class MainScreen extends StatefulWidget {
   _MainScreenState createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen > {
+class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateMixin {
   BitmapDescriptor pinLocationIcon;
   BitmapDescriptor pinPharmaIcon;
 
   bool _mainScreen = true;
-  bool isThreeDimensionMap = true;
   GoogleMapController _mapController ;
   final Map<String, Marker> _markers = {};
 
@@ -33,7 +28,8 @@ class _MainScreenState extends State<MainScreen > {
   Geolocator _geolocator;
   Position _position;
   CameraPosition initialLocation;
-  double tiltCamera;
+
+  AnimationController _animationController;
 
   @override
   void initState() {
@@ -51,7 +47,10 @@ class _MainScreenState extends State<MainScreen > {
     });
     _geolocator = Geolocator();
     checkPermission();
-    tiltCamera = 90;
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
   }
 
   Future<void> _onMapCreated(GoogleMapController controller) async {
@@ -98,7 +97,7 @@ class _MainScreenState extends State<MainScreen > {
     setState(() {
       _mapController.animateCamera(
           CameraUpdate.newCameraPosition(
-            CameraPosition(target: myPinPosition, zoom: 16, tilt: tiltCamera),
+            CameraPosition(target: myPinPosition, zoom: 16, tilt: 30),
           )
       );
       _markers["MyLocation"] = myMarker;
@@ -162,7 +161,7 @@ class _MainScreenState extends State<MainScreen > {
         myPinPosition = LatLng(_position.latitude , _position.longitude);
         _mapController.animateCamera(
             CameraUpdate.newCameraPosition(
-              CameraPosition(target: myPinPosition, zoom: 16,tilt: tiltCamera),
+              CameraPosition(target: myPinPosition, zoom: 16,tilt: 30),
             )
         );
         final myMarker = Marker(
@@ -179,6 +178,28 @@ class _MainScreenState extends State<MainScreen > {
       print('Error: ${e.toString()}');
     }
   }
+
+  void _awaitReturnValueFromSecondScreen(BuildContext context) async {
+
+    // start the SecondScreen and wait for it to finish with a result
+    final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchScreen(),
+        ));
+
+    // after the SecondScreen result comes back update the Text widget with it
+    setState(() {
+      LatLng returnedValue = result;
+      returnedValue = (returnedValue == null)? myPinPosition: returnedValue;
+      _mapController.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(target: returnedValue, zoom: 16,tilt: 30),
+          )
+      );
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -268,11 +289,9 @@ class _MainScreenState extends State<MainScreen > {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               IconButton(
-                icon: isThreeDimensionMap ? ImageIcon (new AssetImage("assets/images/3dLogo.png"), color: null) : ImageIcon (new AssetImage("assets/images/2dLogo.png"), color: null) ,
+                icon: Icon(Icons.search),
                 onPressed: () {
-                  setState(() {
-                    isThreeDimensionMap = (!isThreeDimensionMap);
-                  });
+                  _awaitReturnValueFromSecondScreen(context);
                 },
               ),
               IconButton(

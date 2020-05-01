@@ -95,7 +95,7 @@ class BlacklistToken(db.Model):
             return False
 
 
-class pharmacies(db.Model):
+class pharmacy(db.Model):
     """Model for pharmaLive pharmacies ."""
 
     __tablename__ = "pharmacies"
@@ -103,10 +103,11 @@ class pharmacies(db.Model):
     pharmacy_name = db.Column(db.String(64), index=False, unique=False, nullable=True)
     address = db.Column(db.String(64), index=True, unique=True, nullable=False)
     phone_number = db.Column(db.Integer, index=False, unique=True, nullable=True)
-    longitude = db.Column(db.Integer, index=False, unique=True, nullable=False)
-    latitude = db.Column(db.Integer, index=False, unique=True, nullable=False)
+    longitude = db.Column(db.Float, index=False, unique=True, nullable=False)
+    latitude = db.Column(db.Float, index=False, unique=True, nullable=False)
     pharmacist_id = db.Column(db.String, db.ForeignKey("users.id"), nullable=False)
     # User = relationship("User", backref="pharmacies")
+    pharmacist = relationship("users", backref="pharmacy")
 
     def __init__(
         self,
@@ -128,7 +129,7 @@ class pharmacies(db.Model):
         self.available = available
 
     def __repr__(self):
-        return "<pharmacies {}\n{}\n{}>".format(
+        return "<pharmacy {}\n{}\n{}>".format(
             self.pharmacist_id, self.address, self.available
         )
 

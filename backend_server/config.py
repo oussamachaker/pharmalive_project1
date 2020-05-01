@@ -1,7 +1,8 @@
 import os
 
-postgres_local_base = 'postgresql://postgres:@localhost/'
-database_name = 'flask_jwt_auth'
+basedir = os.path.abspath(os.path.dirname(__file__))
+sqlite_local_base = "sqlite:///"
+database_name = os.path.join(basedir, 'db.sqlite')
 
 
 
@@ -16,4 +17,4 @@ class DevelopmentConfig(BaseConfig):
     """Development configuration."""
     DEBUG = True
     BCRYPT_LOG_ROUNDS = 4
-    SQLALCHEMY_DATABASE_URI = postgres_local_base + database_name
+    SQLALCHEMY_DATABASE_URI = sqlite_local_base + database_name

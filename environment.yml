@@ -7,4 +7,9 @@ dependencies:
   - pip :
       - flask
       - SQLAlchemy
+      - Flask-SQLAlchemy
+      - flask-cors
+      - Flask-Bcrypt
+      - jwt
+
 

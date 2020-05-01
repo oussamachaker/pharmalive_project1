@@ -6,7 +6,7 @@ from backend_server.models import User, BlacklistToken
 
 auth_blueprint = Blueprint(
     "auth", __name__
-)  # This blueprint is registred in __init__.py
+)  # This blueprint is registered in __init__.py
 
 
 class RegisterAPI(MethodView):

@@ -11,8 +11,8 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(255), index=False, unique=True, nullable=False)
+    username = db.Column(db.String(255), primary_key=True, index=False, unique=True, nullable=False)
+    id = db.Column(db.Integer, autoincrement=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     registered_on = db.Column(db.DateTime, nullable=False)
@@ -106,7 +106,7 @@ class Pharmacy(db.Model):
     longitude = db.Column(db.Float, index=False, unique=True, nullable=False)
     latitude = db.Column(db.Float, index=False, unique=True, nullable=False)
     available = db.Column(db.Boolean, index=False, unique=True, nullable=False)
-    pharmacist_id = db.Column(db.String, db.ForeignKey("Users.id"), nullable=False)
+    pharmacist_id = db.Column(db.String, db.ForeignKey("users.username"), nullable=False)
     pharmacist = relationship("users", backref="pharmacy")
 
     def __init__(
@@ -135,7 +135,7 @@ class Products(db.Model):
     quantity = db.Column(db.Integer, index=False, unique=False, nullable=True)
     last_update = db.Column(db.DateTime, index=True, unique=False, nullable=False)
     pharmacist_id = db.Column(
-        db.String, db.ForeignKey("users.id"), nullable=False  # Users.username
+        db.String, db.ForeignKey("users.username"), nullable=False  
     )
     # User = relationship("User", backref="products")
 

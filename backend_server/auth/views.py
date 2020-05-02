@@ -20,7 +20,8 @@ class RegisterAPI(MethodView):
             try:
                 user = User(
                     email=post_data.get('email'),
-                    password=post_data.get('password')
+                    password=post_data.get('password'),
+                    username=post_data.get('username')
                 )
 
                 # insert the user
@@ -77,7 +78,6 @@ class LoginAPI(MethodView):
                 }
                 return make_response(jsonify(responseObject)), 404
         except Exception as e:
-            print(e)
             responseObject = {
                 'status': 'fail',
                 'message': 'Try again'

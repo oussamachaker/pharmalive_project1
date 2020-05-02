@@ -11,5 +11,6 @@ dependencies:
       - flask-cors
       - Flask-Bcrypt
       - jwt
+      - pyjwt
 
 

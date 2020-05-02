@@ -17,10 +17,11 @@ class User(db.Model):
     registered_on = db.Column(db.DateTime, nullable=False)
     admin = db.Column(db.Boolean, nullable=False, default=False)
 
-    adress = db.relationship('pharmacies', backref=backref('users',uselist = False))
-    product = db.relationship('products', backref=backref('users',uselist = False))
+    child1 = db.relationship('pharmacies', backref=backref('users',uselist = False))
+    child2 = db.relationship('products', backref=backref('users',uselist = False))
 
     def __init__(self, username, email, password, admin=False):
+        self.id = uuid.uuid4().hex
         self.email = email
         self.username = username
         self.password = bcrypt.generate_password_hash(
@@ -122,9 +123,9 @@ class pharmacies(db.Model):
                         unique=True,
                         nullable=False)
     pharmacist_id = db.Column(db.String,
-                    db.ForeignKey('Users.username'),
+                    db.ForeignKey('users.id'), 
                     nullable=False)
-    pharmacist = relationship("users", backref="pharmacies")
+    #User = relationship("User", backref="pharmacies")
 
     def __init__(self,pharmacy_name, address ,phone_number, longitude, latitude,pharmacist_id,available):
         self.id = uuid.uuid4().hex
@@ -159,9 +160,9 @@ class products(db.Model):
                         unique=False,
                         nullable=False)
     pharmacist_id = db.Column(db.String,
-                    db.ForeignKey('users.username'),
+                    db.ForeignKey('users.id'), #Users.username
                     nullable=False)
-    pharmacist = relationship("users", backref="products")                    
+    #User = relationship("User", backref="products")                    
 
     def __init__(self,pharmacist_id , product_name, quantity,last_update):
         self.id = uuid.uuid4().hex

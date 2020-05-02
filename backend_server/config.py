@@ -2,7 +2,7 @@ import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 sqlite_local_base = "sqlite:///"
-database_name = os.path.join(basedir, 'db.sqlite')
+database_name = os.path.join(basedir, 'sqlite.db')
 
 
 

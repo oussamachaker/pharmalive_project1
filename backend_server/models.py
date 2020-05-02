@@ -10,8 +10,8 @@ class User(db.Model):
     """ User Model for storing user related details """
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(255), index=False, unique=True, nullable=False)
+    username = db.Column(db.String(255), primary_key=True, index=False, unique=True, nullable=False)
+    id = db.Column(db.Integer, autoincrement=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     registered_on = db.Column(db.DateTime, nullable=False)
@@ -123,7 +123,7 @@ class pharmacies(db.Model):
                         unique=True,
                         nullable=False)
     pharmacist_id = db.Column(db.String,
-                    db.ForeignKey('users.id'), 
+                    db.ForeignKey('users.username'), 
                     nullable=False)
     #User = relationship("User", backref="pharmacies")
 
@@ -160,7 +160,7 @@ class products(db.Model):
                         unique=False,
                         nullable=False)
     pharmacist_id = db.Column(db.String,
-                    db.ForeignKey('users.id'), #Users.username
+                    db.ForeignKey('users.username'), 
                     nullable=False)
     #User = relationship("User", backref="products")                    
 

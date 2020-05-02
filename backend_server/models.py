@@ -99,10 +99,10 @@ class Pharmacy(db.Model):
     """Model for pharmaLive pharmacies ."""
 
     __tablename__ = "pharmacies"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(64), primary_key=True)
     pharmacy_name = db.Column(db.String(64), index=False, unique=False, nullable=True)
     address = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    phone_number = db.Column(db.Integer, index=False, unique=True, nullable=True)
+    phone_number = db.Column(db.String(64), index=False, unique=True, nullable=True)
     longitude = db.Column(db.Float, index=False, unique=True, nullable=False)
     latitude = db.Column(db.Float, index=False, unique=True, nullable=False)
     available = db.Column(db.Boolean, index=False, unique=True, nullable=False)

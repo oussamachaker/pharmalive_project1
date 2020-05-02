@@ -133,5 +133,8 @@ pharmacy_blueprint.add_url_rule(
     "/pharmacy/<id>", view_func=pharmacy_get_by_id, methods=["GET"]
 )
 pharmacy_blueprint.add_url_rule(
-    "/pharmacy/<id>", view_func=pharmacy_delete, methods=["PUT"]
+    "/pharmacy/<id>", view_func=pharmacy_update, methods=["PUT"]
+)
+pharmacy_blueprint.add_url_rule(
+    "/pharmacy/<id>", view_func=pharmacy_delete, methods=["DELETE"]
 )

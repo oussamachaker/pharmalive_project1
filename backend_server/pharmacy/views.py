@@ -20,7 +20,6 @@ class PharmacySchema(ma.Schema):
             "phone_number",
             "longitude",
             "latitude",
-            "pharmacist_id",
             "available",
         )
 
@@ -124,11 +123,15 @@ pharmacy_get_by_id = PharmacyGetById.as_view("pharmacy_get_by_id")
 pharmacy_delete = PharmacyDelete.as_view("pharmacy_delete")
 
 # add Rules for API Endpoints
-auth_blueprint.add_url_rule(
+pharmacy_blueprint.add_url_rule(
     "/pharmacy", view_func=pharmacy_registration, methods=["POST"]
 )
-auth_blueprint.add_url_rule("/pharmacy", view_func=pharmacy_get_all, methods=["GET"])
-auth_blueprint.add_url_rule(
+pharmacy_blueprint.add_url_rule(
+    "/pharmacy", view_func=pharmacy_get_all, methods=["GET"]
+)
+pharmacy_blueprint.add_url_rule(
     "/pharmacy/<id>", view_func=pharmacy_get_by_id, methods=["GET"]
 )
-auth_blueprint.add_url_rule("pharmacy/<id>", view_func=pharmacy_delete, methods=["PUT"])
+pharmacy_blueprint.add_url_rule(
+    "/pharmacy/<id>", view_func=pharmacy_delete, methods=["PUT"]
+)

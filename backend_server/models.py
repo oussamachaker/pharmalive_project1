@@ -106,8 +106,9 @@ class Pharmacy(db.Model):
     longitude = db.Column(db.Float, index=False, unique=True, nullable=False)
     latitude = db.Column(db.Float, index=False, unique=True, nullable=False)
     available = db.Column(db.Boolean, index=False, unique=True, nullable=False)
-    pharmacist_id = db.Column(db.String, db.ForeignKey("Users.id"), nullable=False)
-    pharmacist = relationship("users", backref="pharmacy")
+    pharmacist_id = db.Column(db.String, db.ForeignKey("users.id"), nullable=False)
+
+    pharmacist = relationship("users", backref="pharmacies")
 
     def __init__(
         self, pharmacy_name, address, phone_number, longitude, latitude, available,

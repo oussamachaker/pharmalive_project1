@@ -19,5 +19,7 @@ db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
 from backend_server.auth.views import auth_blueprint
+from backend_server.pharmacy.views import pharmacy_blueprint
 
 app.register_blueprint(auth_blueprint)
+app.register_blueprint(pharmacy_blueprint)

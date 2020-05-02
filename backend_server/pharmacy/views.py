@@ -6,7 +6,7 @@ from backend_server.models import User, BlacklistToken, Pharmacy
 
 from backend_server.utils import geocoding
 
-auth_blueprint = Blueprint(
+pharmacy_blueprint = Blueprint(
     "pharmacy", __name__
 )  # This blueprint is registered in __init__.py
 
